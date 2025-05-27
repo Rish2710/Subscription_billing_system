@@ -1,0 +1,91 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}My Invoices | Subscription Billing System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Invoices</h1>
+
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <a href="{% url 'invoices' %}" class="btn btn-{% if not status %}primary{% else %}outline-primary{% endif %}">All</a>
+        <a href="{% url 'invoices' %}?status=pending" class="btn btn-{% if status == 'pending' %}primary{% else %}outline-primary{% endif %}">Pending</a>
+        <a href="{% url 'invoices' %}?status=paid" class="btn btn-{% if status == 'paid' %}primary{% else %}outline-primary{% endif %}">Paid</a>
+        <a href="{% url 'invoices' %}?status=overdue" class="btn btn-{% if status == 'overdue' %}primary{% else %}outline-primary{% endif %}">Overdue</a>
+    </div>
+</div>
+
+{% if invoices %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td>{{ invoice.uuid|truncatechars:8 }}</td>
+                    <td>{{ invoice.subscription.plan.get_name_display }}</td>
+                    <td>${{ invoice.amount }}</td>
+                    <td>{{ invoice.issue_date }}</td>
+                    <td>{{ invoice.due_date }}</td>
+                    <td>
+                        <span class="badge badge-{{ invoice.status }}">{{ invoice.get_status_display }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'invoice_detail' invoice.uuid %}" class="btn btn-sm btn-info">View</a>
+                        {% if invoice.status == 'pending' or invoice.status == 'overdue' %}
+                        <a href="{% url 'pay_invoice' invoice.uuid %}" class="btn btn-sm btn-success">Pay</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if is_paginated %}
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for i in paginator.page_range %}
+                {% if page_obj.number == i %}
+                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info">
+        No invoices found.
+        {% if status %}
+            <a href="{% url 'invoices' %}">View all invoices</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %} 

@@ -1,0 +1,117 @@
+{% extends 'billing/emails/base_email.html' %}
+
+{% block title %}Monthly Billing Summary{% endblock %}
+
+{% block content %}
+<div style="background-color: #e7f3ff; border: 1px solid #0066cc; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h2 style="color: #0066cc; margin-top: 0;">📊 Monthly Billing Summary - {{ month_year }}</h2>
+    <p style="color: #0066cc; font-size: 16px;">Here's your billing activity for {{ month_year }}</p>
+</div>
+
+<h3 style="color: #333;">Hello {{ user.first_name|default:user.username }},</h3>
+
+<p>We hope you're enjoying our services! Here's a summary of your billing activity for {{ month_year }}.</p>
+
+<div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #495057;">💰 Financial Summary</h4>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="border-bottom: 1px solid #dee2e6;">
+            <td style="padding: 10px 0; font-weight: bold;">Total Invoices:</td>
+            <td style="padding: 10px 0; text-align: right;">{{ invoice_count }}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #dee2e6;">
+            <td style="padding: 10px 0; font-weight: bold;">Total Amount:</td>
+            <td style="padding: 10px 0; text-align: right; font-weight: bold;">${{ total_amount|floatformat:2 }}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #dee2e6;">
+            <td style="padding: 10px 0; font-weight: bold; color: #28a745;">Amount Paid:</td>
+            <td style="padding: 10px 0; text-align: right; color: #28a745; font-weight: bold;">${{ total_paid|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px 0; font-weight: bold; color: #dc3545;">Amount Pending:</td>
+            <td style="padding: 10px 0; text-align: right; color: #dc3545; font-weight: bold;">${{ total_pending|floatformat:2 }}</td>
+        </tr>
+    </table>
+</div>
+
+{% if last_month_invoices %}
+<div style="background-color: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #495057;">📋 Invoice Details</h4>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                <th style="padding: 12px 8px; text-align: left;">Invoice ID</th>
+                <th style="padding: 12px 8px; text-align: left;">Date</th>
+                <th style="padding: 12px 8px; text-align: right;">Amount</th>
+                <th style="padding: 12px 8px; text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in last_month_invoices %}
+            <tr style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 10px 8px; font-family: monospace;">{{ invoice.uuid|truncatechars:12 }}</td>
+                <td style="padding: 10px 8px;">{{ invoice.issue_date }}</td>
+                <td style="padding: 10px 8px; text-align: right; font-weight: bold;">${{ invoice.amount|floatformat:2 }}</td>
+                <td style="padding: 10px 8px; text-align: center;">
+                    {% if invoice.status == 'paid' %}
+                    <span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                        ✅ Paid
+                    </span>
+                    {% elif invoice.status == 'pending' %}
+                    <span style="background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                        ⏳ Pending
+                    </span>
+                    {% else %}
+                    <span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                        ❌ {{ invoice.status|title }}
+                    </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if active_subscriptions %}
+<div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #155724;">🎯 Active Subscriptions</h4>
+    {% for subscription in active_subscriptions %}
+    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #c3e6cb;">
+        <strong>{{ subscription.plan.name }}</strong> - ${{ subscription.plan.price }}/month<br>
+        <small style="color: #155724;">Active until {{ subscription.end_date }}</small>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if total_pending > 0 %}
+<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h4 style="color: #856404; margin-top: 0;">⚠️ Payment Required</h4>
+    <p style="color: #856404; margin-bottom: 15px;">
+        You have <strong>${{ total_pending|floatformat:2 }}</strong> in pending payments. 
+        Please pay your outstanding invoices to avoid service interruption.
+    </p>
+    <div style="text-align: center;">
+        <a href="http://localhost:8000/billing/invoices/" 
+           style="background-color: #ffc107; color: #212529; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+            💳 Pay Now
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="http://localhost:8000/billing/dashboard/" 
+       style="background-color: #007bff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+        📊 View Full Dashboard
+    </a>
+</div>
+
+<p>Thank you for your continued business!</p>
+
+<p style="color: #6c757d; font-size: 14px; margin-top: 30px;">
+    <em>This summary covers the period of {{ month_year }}. If you have any questions about your billing, please contact our support team.</em>
+</p>
+{% endblock %} 

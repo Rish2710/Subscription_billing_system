@@ -1,0 +1,96 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}Subscribe to {{ plan.get_name_display }} Plan | Subscription Billing System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Subscribe to {{ plan.get_name_display }} Plan</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h4>${{ plan.price }}/month</h4>
+                        <p>{{ plan.description }}</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ today|date:'Y-m-d' }}" required>
+                            <div class="form-text">Your subscription will start on this date.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="" selected disabled>Select a payment method</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        
+                        <div id="credit_card_details" class="mb-3 d-none">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label for="card_number" class="form-label">Card Number</label>
+                                    <input type="text" class="form-control" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="card_expiry" class="form-label">Expiry Date</label>
+                                    <input type="text" class="form-control" id="card_expiry" name="card_expiry" placeholder="MM/YY">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <label for="card_name" class="form-label">Name on Card</label>
+                                    <input type="text" class="form-control" id="card_name" name="card_name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="card_cvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="card_cvv" name="card_cvv" placeholder="123">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agree_terms" name="agree_terms" required>
+                            <label class="form-check-label" for="agree_terms">I agree to the Terms and Conditions</label>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Note:</strong> By subscribing, you agree to be billed ${{ plan.price }} monthly until you cancel your subscription.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Subscribe Now</button>
+                            <a href="{% url 'plans' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentMethodSelect = document.getElementById('payment_method');
+        const creditCardDetails = document.getElementById('credit_card_details');
+        
+        paymentMethodSelect.addEventListener('change', function() {
+            if (this.value === 'credit_card') {
+                creditCardDetails.classList.remove('d-none');
+            } else {
+                creditCardDetails.classList.add('d-none');
+            }
+        });
+    });
+</script>
+{% endblock %} 

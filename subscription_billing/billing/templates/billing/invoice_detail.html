@@ -1,0 +1,103 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}Invoice Details | Subscription Billing System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Invoice #{{ invoice.uuid|truncatechars:8 }}</h3>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge badge-{{ invoice.status }}">{{ invoice.get_status_display }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>Billed To:</h5>
+                    <div>{{ invoice.user.get_full_name|default:invoice.user.username }}</div>
+                    <div>{{ invoice.user.email }}</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h5>Invoice Information:</h5>
+                    <div>Issue Date: {{ invoice.issue_date }}</div>
+                    <div>Due Date: {{ invoice.due_date }}</div>
+                    <div>Status: {{ invoice.get_status_display }}</div>
+                </div>
+            </div>
+            
+            <div class="table-responsive-sm">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>{{ invoice.subscription.plan.get_name_display }} Plan</strong><br>
+                                <small>Billing period: {{ invoice.issue_date }} to {{ invoice.subscription.end_date }}</small>
+                            </td>
+                            <td class="text-end">${{ invoice.amount }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th class="text-end">${{ invoice.amount }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <h5>Payment Terms:</h5>
+                    <p>Payment is due within 15 days from the issue date.</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-end">
+                        {% if invoice.status == 'pending' or invoice.status == 'overdue' %}
+                            <a href="{% url 'pay_invoice' invoice.uuid %}" class="btn btn-success">Pay Now</a>
+                        {% elif invoice.status == 'paid' %}
+                            <div class="alert alert-success">
+                                Paid on {{ invoice.updated_at|date:"F j, Y" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'invoices' %}" class="btn btn-secondary">Back to Invoices</a>
+        <a href="#" class="btn btn-primary" onclick="window.print(); return false;">Print Invoice</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .navbar, .footer, .btn {
+            display: none;
+        }
+        
+        .card {
+            border: none;
+        }
+        
+        .card-header {
+            background-color: #ccc !important;
+            color: #000 !important;
+        }
+    }
+</style>
+{% endblock %} 

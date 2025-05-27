@@ -1,0 +1,109 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}Dashboard | Subscription Billing System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-header">Active Subscriptions</div>
+            <div class="card-body">
+                <h2 class="card-title">{{ active_subscriptions_count }}</h2>
+                <p class="card-text">You have {{ active_subscriptions_count }} active subscription(s).</p>
+                <a href="{% url 'subscriptions' %}" class="btn btn-light">View All</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-white bg-warning">
+            <div class="card-header">Pending Invoices</div>
+            <div class="card-body">
+                <h2 class="card-title">{{ pending_invoices_count }}</h2>
+                <p class="card-text">You have {{ pending_invoices_count }} pending invoice(s).</p>
+                <a href="{% url 'invoices' %}?status=pending" class="btn btn-light">View All</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card text-white bg-danger">
+            <div class="card-header">Overdue Invoices</div>
+            <div class="card-body">
+                <h2 class="card-title">{{ overdue_invoices_count }}</h2>
+                <p class="card-text">You have {{ overdue_invoices_count }} overdue invoice(s).</p>
+                <a href="{% url 'invoices' %}?status=overdue" class="btn btn-light">View All</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mt-5 mb-3">Recent Invoices</h2>
+{% if recent_invoices %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Plan</th>
+                    <th>Amount</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in recent_invoices %}
+                <tr>
+                    <td>{{ invoice.uuid|truncatechars:8 }}</td>
+                    <td>{{ invoice.subscription.plan.get_name_display }}</td>
+                    <td>${{ invoice.amount }}</td>
+                    <td>{{ invoice.issue_date }}</td>
+                    <td>{{ invoice.due_date }}</td>
+                    <td>
+                        <span class="badge badge-{{ invoice.status }}">{{ invoice.get_status_display }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'invoice_detail' invoice.uuid %}" class="btn btn-sm btn-info">View</a>
+                        {% if invoice.status == 'pending' or invoice.status == 'overdue' %}
+                        <a href="{% url 'pay_invoice' invoice.uuid %}" class="btn btn-sm btn-success">Pay</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">You don't have any recent invoices.</div>
+{% endif %}
+
+<h2 class="mt-5 mb-3">Your Subscriptions</h2>
+{% if active_subscriptions %}
+    <div class="row">
+        {% for subscription in active_subscriptions %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    {{ subscription.plan.get_name_display }}
+                    <span class="badge badge-{{ subscription.status }} float-end">{{ subscription.get_status_display }}</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">${{ subscription.plan.price }}/month</h5>
+                    <p class="card-text">
+                        <strong>Start Date:</strong> {{ subscription.start_date }}<br>
+                        <strong>End Date:</strong> {{ subscription.end_date }}
+                    </p>
+                    <a href="{% url 'subscription_detail' subscription.id %}" class="btn btn-primary">Manage</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">You don't have any active subscriptions. <a href="{% url 'plans' %}">View available plans</a>.</div>
+{% endif %}
+{% endblock %} 

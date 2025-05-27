@@ -1,0 +1,101 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}Plans | Subscription Billing System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Available Plans</h1>
+
+<div class="row">
+    {% for plan in plans %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3>{{ plan.get_name_display }}</h3>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title text-center">${{ plan.price }}<small class="text-muted fw-light">/mo</small></h1>
+                <p class="card-text">{{ plan.description }}</p>
+                <div class="d-grid gap-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'subscribe' plan.id %}" class="btn btn-primary">Subscribe Now</a>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'subscribe' plan.id %}" class="btn btn-primary">Login to Subscribe</a>
+                        <div class="alert alert-info mt-2">
+                            <small>You need to be logged in to subscribe to a plan.</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Plan Comparison</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Basic</th>
+                                <th>Pro</th>
+                                <th>Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Price</td>
+                                <td>$9.99/mo</td>
+                                <td>$19.99/mo</td>
+                                <td>$49.99/mo</td>
+                            </tr>
+                            <tr>
+                                <td>Users</td>
+                                <td>1</td>
+                                <td>5</td>
+                                <td>Unlimited</td>
+                            </tr>
+                            <tr>
+                                <td>Storage</td>
+                                <td>10 GB</td>
+                                <td>50 GB</td>
+                                <td>100 GB</td>
+                            </tr>
+                            <tr>
+                                <td>Support</td>
+                                <td>Email</td>
+                                <td>Email, Chat</td>
+                                <td>Email, Chat, Phone</td>
+                            </tr>
+                            <tr>
+                                <td>Access to API</td>
+                                <td><span class="text-danger">✗</span></td>
+                                <td><span class="text-success">✓</span></td>
+                                <td><span class="text-success">✓</span></td>
+                            </tr>
+                            <tr>
+                                <td>Custom Reports</td>
+                                <td><span class="text-danger">✗</span></td>
+                                <td><span class="text-danger">✗</span></td>
+                                <td><span class="text-success">✓</span></td>
+                            </tr>
+                            <tr>
+                                <td>Dedicated Account Manager</td>
+                                <td><span class="text-danger">✗</span></td>
+                                <td><span class="text-danger">✗</span></td>
+                                <td><span class="text-success">✓</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,41 @@
+{% extends 'billing/emails/email_base.html' %}
+
+{% block title %}Payment Confirmation - Subscription Billing System{% endblock %}
+
+{% block header %}Payment Confirmation{% endblock %}
+
+{% block content %}
+<h2>Hello {{ user.first_name|default:user.username }},</h2>
+
+<p>We've received your payment for invoice #{{ invoice.uuid }}. Thank you!</p>
+
+<div style="background-color: #d4edda; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #28a745;">
+    <h3>Payment Details:</h3>
+    <table>
+        <tr>
+            <th>Invoice Number</th>
+            <td>{{ invoice.uuid }}</td>
+        </tr>
+        <tr>
+            <th>Amount Paid</th>
+            <td>${{ invoice.amount|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Payment Date</th>
+            <td>{% now "F j, Y" %}</td>
+        </tr>
+        <tr>
+            <th>Subscription</th>
+            <td>{{ invoice.subscription.plan.get_name_display }} Plan</td>
+        </tr>
+    </table>
+</div>
+
+<p>Your subscription will continue to be active until {{ invoice.subscription.end_date }}.</p>
+
+<div style="text-align: center;">
+    <a href="http://localhost:8000{% url 'invoice_detail' uuid=invoice.uuid %}" class="button">View Invoice</a>
+</div>
+
+<p>Thank you for your business!</p>
+{% endblock %} 

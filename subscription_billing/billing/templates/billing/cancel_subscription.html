@@ -1,0 +1,48 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}Cancel Subscription | Subscription Billing System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Cancel Subscription</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">Are you sure you want to cancel your {{ subscription.plan.get_name_display }} subscription?</h4>
+                    
+                    <div class="alert alert-warning">
+                        <p><strong>Important:</strong> By cancelling your subscription:</p>
+                        <ul>
+                            <li>You will continue to have access until the end of your current billing period ({{ subscription.end_date }}).</li>
+                            <li>No refunds will be issued for the current billing period.</li>
+                            <li>You will no longer be billed for this subscription.</li>
+                            <li>This action cannot be undone. You will need to create a new subscription if you change your mind.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Subscription Details:</h5>
+                        <p>
+                            <strong>Plan:</strong> {{ subscription.plan.get_name_display }}<br>
+                            <strong>Price:</strong> ${{ subscription.plan.price }}/month<br>
+                            <strong>Start Date:</strong> {{ subscription.start_date }}<br>
+                            <strong>End Date:</strong> {{ subscription.end_date }}
+                        </p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Confirm Cancellation</button>
+                            <a href="{% url 'subscription_detail' subscription.id %}" class="btn btn-outline-secondary">Go Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

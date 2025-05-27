@@ -1,0 +1,45 @@
+{% extends 'billing/base.html' %}
+
+{% block title %}My Subscriptions | Subscription Billing System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Subscriptions</h1>
+
+{% if subscriptions %}
+    <div class="row">
+        {% for subscription in subscriptions %}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    {{ subscription.plan.get_name_display }}
+                    <span class="badge badge-{{ subscription.status }} float-end">{{ subscription.get_status_display }}</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">${{ subscription.plan.price }}/month</h5>
+                    <p class="card-text">
+                        <strong>Start Date:</strong> {{ subscription.start_date }}<br>
+                        <strong>End Date:</strong> {{ subscription.end_date }}<br>
+                        <strong>Status:</strong> {{ subscription.get_status_display }}<br>
+                        <strong>Created At:</strong> {{ subscription.created_at|date:"F j, Y" }}
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'subscription_detail' subscription.id %}" class="btn btn-primary">View Details</a>
+                        {% if subscription.status == 'active' %}
+                        <a href="{% url 'cancel_subscription' subscription.id %}" class="btn btn-danger">Cancel Subscription</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        You don't have any subscriptions. <a href="{% url 'plans' %}">Browse available plans</a> to subscribe.
+    </div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'plans' %}" class="btn btn-primary">Browse Plans</a>
+</div>
+{% endblock %} 

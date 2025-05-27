@@ -1,0 +1,9 @@
+INFO 2025-05-27 14:45:19,104 utils 21409 7975866368 Email sent to rishabhrastogi185@gmail.com: Subscription Confirmation - Basic Plan
+INFO 2025-05-27 14:46:51,904 utils 21586 7975866368 Email sent to rishabhrastogi185@gmail.com: Subscription Confirmation - Basic Plan
+INFO 2025-05-27 14:49:32,956 utils 21730 7975866368 Email sent to rishabrastogi@gmail.com: Subscription Confirmation - Basic Plan
+INFO 2025-05-27 14:49:32,958 utils 21730 7975866368 Preparing to send invoice created email for invoice 46833bb8-61ba-4ef0-a4c6-50e03b3a7b31 to rishabrastogi@gmail.com
+INFO 2025-05-27 14:49:32,959 utils 21730 7975866368 Sending invoice created email to ['rishabrastogi@gmail.com']
+INFO 2025-05-27 14:49:37,568 utils 21730 7975866368 Email sent to rishabrastogi@gmail.com: New Invoice #46833bb8-61ba-4ef0-a4c6-50e03b3a7b31 - Basic Plan
+INFO 2025-05-27 14:59:27,459 utils 10 281473208873376 Email sent to rishabhrastogi185@gmail.com: Subscription Confirmation - Pro Plan
+INFO 2025-05-27 14:59:41,163 utils 10 281473208873376 Email sent to rishabhrastogi185@gmail.com: Payment Confirmation: Invoice #fa01fee2-acae-4b3c-b415-9d58836ea2b2
+INFO 2025-05-27 15:01:19,948 utils 10 281473208873376 Email sent to rishabhrastogi185@gmail.com: Subscription Confirmation - Enterprise Plan

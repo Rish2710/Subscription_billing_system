@@ -1,0 +1,82 @@
+{% extends 'billing/emails/base_email.html' %}
+
+{% block title %}Payment Reminder - Unpaid Invoices{% endblock %}
+
+{% block content %}
+<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h2 style="color: #856404; margin-top: 0;">⚠️ Payment Reminder - Unpaid Invoices</h2>
+    <p style="color: #856404; font-size: 16px;">You have unpaid invoices that require your attention.</p>
+</div>
+
+<h3 style="color: #333;">Hello {{ user.first_name|default:user.username }},</h3>
+
+<p>This is a friendly reminder that you have <strong>{{ invoices.count }} unpaid invoice{{ invoices.count|pluralize }}</strong> that require payment to avoid service interruption.</p>
+
+<div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #495057;">📋 Unpaid Invoices</h4>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #e9ecef; border-bottom: 2px solid #dee2e6;">
+                <th style="padding: 12px 8px; text-align: left;">Invoice ID</th>
+                <th style="padding: 12px 8px; text-align: left;">Plan</th>
+                <th style="padding: 12px 8px; text-align: left;">Due Date</th>
+                <th style="padding: 12px 8px; text-align: right;">Amount</th>
+                <th style="padding: 12px 8px; text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr style="border-bottom: 1px solid #dee2e6;">
+                <td style="padding: 10px 8px; font-family: monospace;">{{ invoice.uuid|truncatechars:12 }}</td>
+                <td style="padding: 10px 8px;">{{ invoice.subscription.plan.name }}</td>
+                <td style="padding: 10px 8px; {% if invoice.status == 'overdue' %}color: #dc3545; font-weight: bold;{% endif %}">{{ invoice.due_date }}</td>
+                <td style="padding: 10px 8px; text-align: right; font-weight: bold;">${{ invoice.amount|floatformat:2 }}</td>
+                <td style="padding: 10px 8px; text-align: center;">
+                    {% if invoice.status == 'pending' %}
+                    <span style="background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                        ⏳ Pending
+                    </span>
+                    {% elif invoice.status == 'overdue' %}
+                    <span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                        ❌ Overdue
+                    </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+    <h4 style="color: #721c24; margin-top: 0;">💳 Payment Required</h4>
+    <p style="color: #721c24; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
+        Total Amount Due: ${% for invoice in invoices %}{{ invoice.amount|floatformat:2 }}{% if not forloop.last %} + ${% endif %}{% endfor %}
+    </p>
+    <p style="color: #721c24;">
+        Please pay your outstanding invoices as soon as possible to avoid service interruption.
+    </p>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="http://localhost:8000/billing/invoices/?status=pending" 
+       style="background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+        💳 Pay All Invoices
+    </a>
+</div>
+
+<div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 8px; padding: 15px; margin: 20px 0;">
+    <h4 style="color: #0c5460; margin-top: 0;">📞 Need Help?</h4>
+    <p style="color: #0c5460; margin-bottom: 0;">
+        If you're experiencing any issues with payment or have questions about your invoices, 
+        please don't hesitate to contact our support team.
+    </p>
+</div>
+
+<p>Thank you for your prompt attention to this matter.</p>
+
+<p style="color: #6c757d; font-size: 14px; margin-top: 30px;">
+    <em>This is an automated reminder sent daily for unpaid invoices. 
+    If you've already made payment, please allow 24-48 hours for processing.</em>
+</p>
+{% endblock %} 

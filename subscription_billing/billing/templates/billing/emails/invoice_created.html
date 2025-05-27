@@ -1,0 +1,47 @@
+{% extends 'billing/emails/email_base.html' %}
+
+{% block title %}New Invoice - Subscription Billing System{% endblock %}
+
+{% block header %}New Invoice{% endblock %}
+
+{% block content %}
+<h2>Hello {{ user.first_name|default:user.username }},</h2>
+
+<p>A new invoice has been generated for your subscription to the <strong>{{ invoice.subscription.plan.get_name_display }}</strong> plan.</p>
+
+<div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h3>Invoice Details:</h3>
+    <table>
+        <tr>
+            <th>Invoice Number</th>
+            <td>{{ invoice.uuid }}</td>
+        </tr>
+        <tr>
+            <th>Issue Date</th>
+            <td>{{ invoice.issue_date }}</td>
+        </tr>
+        <tr>
+            <th>Due Date</th>
+            <td>{{ invoice.due_date }}</td>
+        </tr>
+        <tr>
+            <th>Amount</th>
+            <td>${{ invoice.amount|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ invoice.get_status_display }}</td>
+        </tr>
+    </table>
+</div>
+
+<p>Please make payment by the due date to ensure uninterrupted service.</p>
+
+<div style="text-align: center;">
+    <a href="http://localhost:8000{% url 'invoice_detail' uuid=invoice.uuid %}" class="button">View Invoice</a>
+</div>
+
+<p>If you've already made payment, please disregard this email.</p>
+
+<p>Thank you for choosing our services!</p>
+{% endblock %} 

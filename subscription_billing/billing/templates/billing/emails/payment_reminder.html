@@ -1,0 +1,53 @@
+{% extends 'billing/emails/email_base.html' %}
+
+{% block title %}Payment Reminder - Subscription Billing System{% endblock %}
+
+{% block header %}Payment Reminder{% endblock %}
+
+{% block content %}
+<h2>Hello {{ user.first_name|default:user.username }},</h2>
+
+<p>This is a friendly reminder that your invoice for the <strong>{{ invoice.subscription.plan.get_name_display }}</strong> plan is past due.</p>
+
+<div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ffc107;">
+    <h3>Overdue Invoice Details:</h3>
+    <table>
+        <tr>
+            <th>Invoice Number</th>
+            <td>{{ invoice.uuid }}</td>
+        </tr>
+        <tr>
+            <th>Issue Date</th>
+            <td>{{ invoice.issue_date }}</td>
+        </tr>
+        <tr>
+            <th>Due Date</th>
+            <td>{{ invoice.due_date }}</td>
+        </tr>
+        <tr>
+            <th>Amount</th>
+            <td>${{ invoice.amount|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ invoice.get_status_display }}</td>
+        </tr>
+        <tr>
+            <th>Days Overdue</th>
+            <td>{{ invoice.due_date|timesince }}</td>
+        </tr>
+    </table>
+</div>
+
+<p>To avoid service interruption, please make your payment as soon as possible.</p>
+
+<div style="text-align: center;">
+    <a href="http://localhost:8000{% url 'pay_invoice' uuid=invoice.uuid %}" class="button">Pay Now</a>
+</div>
+
+<p>If you've already made this payment, please disregard this message.</p>
+
+<p>If you're experiencing any issues or have questions about your invoice, please contact our support team.</p>
+
+<p>Thank you for your prompt attention to this matter.</p>
+{% endblock %} 
