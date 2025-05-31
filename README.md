@@ -142,13 +142,3 @@ If using Gmail, you'll need to:
    - It will generate a 16-character password.
    - Use the generated 16-character password without spaces in your `.env` file.
 
-### Testing Email Configuration
-
-To test if your email configuration is working, run:
-
-```bash
-# Replace with the email address you want to send the test to
-python manage.py test_email --to recipient@example.com
-```
-
-This will send a test email and show if it was successful or if there were any errors.
